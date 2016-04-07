@@ -1,0 +1,10 @@
+<html>  
+<body>  
+<h3>您好 $!{email}, 你的密码为$!{password}</h3>  
+  
+<div>  
+    
+</div>  
+</body>  
+  
+</html>

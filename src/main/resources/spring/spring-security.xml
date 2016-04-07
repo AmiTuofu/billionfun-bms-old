@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns:b="http://www.springframework.org/schema/beans"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/security"
+ 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+ 	http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
+ 	<!-- 注意:security的切面实现会和项目中的切面冲突,所以在配置的时候要分开 -->
+    <!-- auto-config = true 则使用from-login. 如果不使用该属性 则默认为http-basic(没有session). 
+		access-denied-page:出错后跳转到的错误页面;
+	-->
+     
+	<http auto-config="true" use-expressions="true" >
+		<!-- intercept-url:拦截器,可以设定哪些路径需要哪些权限来访问. -->
+		<access-denied-handler error-page="/common/403.jsp"/>
+		<intercept-url pattern="/login.html" access="permitAll" />
+		<intercept-url pattern="/*.html*" access="hasAnyRole('ROLE_SA','ROLE_ADMIN','ROLE_USER')" />
+		<intercept-url pattern="/*/*.html*" access="hasAnyRole('ROLE_SA','ROLE_ADMIN','ROLE_USER')" />
+		<!-- login-page：指定登录页面。  -->  
+		<!-- login-processing-url：指定了客户在登录页面中按下 Sign In 按钮时要访问的 URL。-->  
+        <!-- authentication-failure-url：指定了身份验证失败时跳转到的页面。-->  
+        <!-- default-target-url：指定了成功进行身份验证和授权后默认呈现给用户的页面。-->  
+		<!-- always-use-default-target：指定了是否在身份验证通过后总是跳转到default-target-url属性指定的URL。 -->  
+		<form-login default-target-url="/index.html" 
+		    authentication-failure-url="/login.html?error=true" 
+		    always-use-default-target="true"
+		    username-parameter="j_username"
+		    password-parameter="j_password"
+			login-page="/login.html"
+		    login-processing-url="/j_spring_security_check"
+		     />
+		<!-- logout-url：指定了用于响应退出系统请求的URL。其默认值为：/j_spring_security_logout。-->  
+        <!-- logout-success-url：退出系统后转向的URL。-->  
+        <!-- invalidate-session：指定在退出系统时是否要销毁Session。-->  
+		<logout invalidate-session="true" logout-success-url="/logout.html?logout=true"  
+            logout-url="/j_spring_security_logout" />
+		
+		<!-- max-sessions:允许用户帐号登录的次数。范例限制用户只能登录一次。-->  
+		<!-- session-fixation-protection:此值表示：用户第二次登录时，前一次的登录信息都被清空。-->  
+ 		<!-- errorn-if-maximum-exceeded:默认为false，-->  
+		<!-- 当error-if-maximum-exceeded="true"时系统会拒绝第二次登录。-->  
+  		<!-- invalid-session-url检测失效的sessionId,session超时时，定位到另外一个URL -->
+  		<!-- id登陆唯一. 后登陆的账号会挤掉第一次登陆的账号  error-if-maximum-exceeded="true" 禁止2次登陆;
+			session-fixation-protection="none" 防止伪造sessionid攻击. 用户登录成功后会销毁用户当前的session.
+			创建新的session,并把用户信息复制到新session中.
+		 -->
+        <session-management invalid-session-url="/logout.html?error=timeout" session-fixation-protection="none" >  
+            <concurrency-control max-sessions="2"  
+                error-if-maximum-exceeded="false" />  
+        </session-management>  
+        <remember-me data-source-ref="dataSource" token-validity-seconds="1209600" remember-me-parameter="_spring_security_remember_me" />
+		<!-- <remember-me key="HedahaiSetThisKey" /> -->
+		<!-- CSRF保护功能禁用 -->
+		<csrf disabled="true" />
+	</http>
+<!-- 	<authentication-manager> 
+	    <authentication-provider> 
+	        <user-service> 
+			    <user name="superadmin" password="123qwe!@#QWE" authorities="ROLE_SA" /> 
+			    <user name="admin" password="123qwe" authorities="ROLE_ADMIN" /> 
+			    <user name="guest" password="111111" authorities="ROLE_USER" />
+	    	</user-service> 
+	    </authentication-provider> 
+	</authentication-manager> -->
+	<authentication-manager erase-credentials="false">
+		<authentication-provider user-service-ref="securityService">  
+	    	 <password-encoder ref="md5PasswordEncoder">
+            	<salt-source user-property="username"/>
+            </password-encoder> 
+		</authentication-provider>
+	</authentication-manager>
+	<b:bean id="md5PasswordEncoder" class="org.springframework.security.authentication.encoding.Md5PasswordEncoder">
+	    <b:property name="encodeHashAsBase64" value="false"></b:property>
+	</b:bean>
+<!--     <http auto-config="true"  >
+		<csrf disabled="true" />
+	</http>
+
+ 	<global-method-security pre-post-annotations="enabled" /> -->
+</b:beans>

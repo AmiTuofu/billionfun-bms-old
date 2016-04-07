@@ -1,0 +1,10 @@
+<html>  
+<body>  
+<ul>
+#foreach($event in $list)
+       <li>$event.name&nbsp;&nbsp;$event.startDate&nbsp;&nbsp;$event.endDate</li>
+     #end
+</ul
+</body>  
+  
+</html>
