@@ -1,7 +1,5 @@
 package com.billionfun.bms.product.mall.controllers;
 
-import java.io.Serializable;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
@@ -18,71 +16,71 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.billionfun.bms.product.mall.common.Contants;
-import com.billionfun.bms.product.mall.common.utils.PageUtil;
 import com.billionfun.bms.product.mall.common.utils.StringUtil;
 import com.billionfun.bms.product.mall.model.SysUser;
-import com.billionfun.bms.product.mall.service.BaseService;
 import com.billionfun.bms.product.mall.service.SysUserService;
 
 /**
  * 
- * @ClassName: BaseController 
+ * @ClassName: BaseController
  * @Description: TODO
- * @author  AmiTuofu
- * @date  2015年12月21日 上午12:03:37 
- *
+ * @author AmiTuofu
+ * @date 2015年12月21日 上午12:03:37
+ * 
  */
 @Controller
-public abstract  class BaseController {
-	
+public abstract class BaseController {
+
 	protected HttpServletRequest request;
 	protected HttpServletResponse response;
 	protected HttpSession session;
 	protected RedirectAttributes rAttr;
-	
+
 	@Autowired
 	protected SysUserService userService;
+
 	/**
 	 * 
-	 * @Title: setReqAndRes 
+	 * @Title: setReqAndRes
 	 * @Description: TODO
 	 * @param @param request
 	 * @param @param response
-	 * @param @param rAttr 
+	 * @param @param rAttr
 	 * @return void
 	 * @throws
 	 */
 	@ModelAttribute
-	public void setReqAndRes(HttpServletRequest request, HttpServletResponse response,
-			RedirectAttributes rAttr) {
+	public void setReqAndRes(HttpServletRequest request,
+			HttpServletResponse response, RedirectAttributes rAttr) {
 		this.request = request;
 		this.response = response;
 		this.session = request.getSession();
 		this.rAttr = rAttr;
-		
-		if(StringUtil.empty(MDC.get("SysUser"))){
+
+		if (StringUtil.empty(MDC.get("SysUser"))) {
 			String remoteIp = getIpAddr(request);
 			MDC.put("remoteIp", remoteIp);
 		}
 
-		if(getCurrentUser()==null){
-			if(SecurityContextHolder
-					.getContext().getAuthentication().getPrincipal() instanceof User){
+		if (getCurrentUser() == null) {
+			if (SecurityContextHolder.getContext().getAuthentication()
+					.getPrincipal() instanceof User) {
 				UserDetails userDetails = (UserDetails) SecurityContextHolder
 						.getContext().getAuthentication().getPrincipal();
-				if(userDetails!=null){
-					SysUser user = userService.loadUser(userDetails.getUsername());
+				if (userDetails != null) {
+					SysUser user = userService.loadUser(userDetails
+							.getUsername());
 					session.setAttribute(Contants.SESSION_USER, user);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * 
-	 * @Title: init 
+	 * @Title: init
 	 * @Description: TODO
-	 * @param  
+	 * @param
 	 * @return void
 	 * @throws
 	 */
@@ -90,12 +88,12 @@ public abstract  class BaseController {
 	public void init() {
 
 	}
-	
+
 	/**
 	 * 
-	 * @Title: destroy 
+	 * @Title: destroy
 	 * @Description: TODO
-	 * @param  
+	 * @param
 	 * @return void
 	 * @throws
 	 */
@@ -103,13 +101,13 @@ public abstract  class BaseController {
 	public void destroy() {
 
 	}
-	
+
 	/**
 	 * 
-	 * @Title: getIpAddr 
+	 * @Title: getIpAddr
 	 * @Description: TODO
 	 * @param @param request
-	 * @param @return 
+	 * @param @return
 	 * @return String
 	 * @throws
 	 */
@@ -126,8 +124,8 @@ public abstract  class BaseController {
 		}
 		return ip;
 	}
-	
-	public SysUser getCurrentUser(){
-		return (SysUser)session.getAttribute(Contants.SESSION_USER);
+
+	public SysUser getCurrentUser() {
+		return (SysUser) session.getAttribute(Contants.SESSION_USER);
 	}
 }
